@@ -23,7 +23,7 @@ rv_uint32 ram_access(const rv_uint32 addr, const RISCV_BUSWIDTH width,
   }
 
   if (is_store) {
-    if (addr == UART_OUT && width == RVBUS_BYTE) {
+    if (addr == UART_OUT) {
       const char ch = static_cast<char>(*data & 0xFF);
       if (ch == 0x7f) {
         std::cout << "\b \b";
@@ -33,15 +33,17 @@ rv_uint32 ram_access(const rv_uint32 addr, const RISCV_BUSWIDTH width,
       std::cout.flush();
     } else if (addr == UART_IN) {
       // do nothing when writing to address UART_IN
-    } else if (addr != LED) {
+    } else if (addr == LED) {
+      // do nothing when writing to address LED
+    } else {
       for (rv_uint32 i = 0; i < width; ++i) {
         ram[addr + i] = (*data >> (i * 8)) & 0xFF;
       }
     }
   } else {
-    if (addr == UART_OUT && width == RVBUS_BYTE) {
+    if (addr == UART_OUT) {
       *data = 0;
-    } else if (addr == UART_IN && width == RVBUS_BYTE) {
+    } else if (addr == UART_IN) {
       const int ch = getchar();
       if (ch != EOF) {
         if (ch == 0x08) {
@@ -54,7 +56,9 @@ rv_uint32 ram_access(const rv_uint32 addr, const RISCV_BUSWIDTH width,
       } else {
         *data = 0;
       }
-    } else if (addr != LED) {
+    } else if (addr == LED) {
+      // do nothing when reading from address LED
+    } else {
       *data = 0;
       for (rv_uint32 i = 0; i < width; ++i) {
         *data |= (ram[addr + i] & 0xFF) << (i * 8);
