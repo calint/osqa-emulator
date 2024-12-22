@@ -7,9 +7,9 @@
 // #define RISCV_DEBUG
 #include "riscv.h"
 
+#define LED 0xffffffff
 #define UART_OUT 0xfffffffe
 #define UART_IN 0xfffffffd
-#define LED 0xffffffff
 
 std::vector<int8_t> ram(2 * 1024 * 1024, -1);
 
@@ -46,9 +46,9 @@ rv_uint32 ram_access(const rv_uint32 addr, const RISCV_BUSWIDTH width,
     } else if (addr == UART_IN) {
       const int ch = getchar();
       if (ch != EOF) {
-        if (ch == 0x08) {
-          *data = 0x7f;
-        } else if (ch == 0x0a) {
+        if (ch == 0x0a) {
+          // convert newline from terminal to carriage return as expected from
+          // serial
           *data = 0x0d;
         } else {
           *data = ch;
@@ -70,6 +70,11 @@ rv_uint32 ram_access(const rv_uint32 addr, const RISCV_BUSWIDTH width,
 }
 
 auto main(int argc, char **argv) -> int {
+  if (argc != 2) {
+    std::cerr << "Usage: " << argv[0] << " <firmware.bin>" << std::endl;
+    return 1;
+  }
+
   struct termios newt;
   tcgetattr(STDIN_FILENO, &oldt);
   newt = oldt;
@@ -78,7 +83,7 @@ auto main(int argc, char **argv) -> int {
 
   atexit([]() -> void { tcsetattr(STDIN_FILENO, TCSANOW, &oldt); });
 
-  std::ifstream file("firmware.bin", std::ios::binary | std::ios::ate);
+  std::ifstream file(argv[1], std::ios::binary | std::ios::ate);
   if (!file) {
     std::cerr << "Error opening file" << std::endl;
     return 1;

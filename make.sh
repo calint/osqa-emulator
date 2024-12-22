@@ -5,3 +5,4 @@ g++ -std=c++23 -g -o emu -Wfatal-errors -Werror -Wall -Wextra -Wpedantic -Wno-un
 echo
 ls -la --color emu
 echo
+./emu firmware.bin
