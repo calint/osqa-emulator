@@ -17,7 +17,7 @@ rv_uint32 ram_access(const rv_uint32 addr, const RISCV_BUSWIDTH width,
                      const rv_uint32 is_store, rv_uint32 *const data) {
   if (addr + width > ram.size() && addr != UART_OUT && addr != UART_IN &&
       addr != LED) {
-    return 1; // Address out of bounds
+    return 1;
   }
 
   if (is_store) {
