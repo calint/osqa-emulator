@@ -13,6 +13,8 @@
 
 std::vector<int8_t> ram(2 * 1024 * 1024, -1);
 
+struct termios oldt;
+
 rv_uint32 ram_access(const rv_uint32 addr, const RISCV_BUSWIDTH width,
                      const rv_uint32 is_store, rv_uint32 *const data) {
   if (addr + width > ram.size() && addr != UART_OUT && addr != UART_IN &&
@@ -40,12 +42,6 @@ rv_uint32 ram_access(const rv_uint32 addr, const RISCV_BUSWIDTH width,
     if (addr == UART_OUT && width == RVBUS_BYTE) {
       *data = 0;
     } else if (addr == UART_IN && width == RVBUS_BYTE) {
-      struct termios oldt, newt;
-      tcgetattr(STDIN_FILENO, &oldt);
-      newt = oldt;
-      newt.c_lflag &= ~(ICANON | ECHO);
-      tcsetattr(STDIN_FILENO, TCSANOW, &newt);
-
       const int ch = getchar();
       if (ch != EOF) {
         if (ch == 0x08) {
@@ -58,8 +54,6 @@ rv_uint32 ram_access(const rv_uint32 addr, const RISCV_BUSWIDTH width,
       } else {
         *data = 0;
       }
-
-      tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
     } else if (addr != LED) {
       *data = 0;
       for (rv_uint32 i = 0; i < width; ++i) {
@@ -72,6 +66,14 @@ rv_uint32 ram_access(const rv_uint32 addr, const RISCV_BUSWIDTH width,
 }
 
 auto main(int argc, char **argv) -> int {
+  struct termios newt;
+  tcgetattr(STDIN_FILENO, &oldt);
+  newt = oldt;
+  newt.c_lflag &= ~(ICANON | ECHO);
+  tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+
+  atexit([]() -> void { tcsetattr(STDIN_FILENO, TCSANOW, &oldt); });
+
   std::ifstream file("firmware.bin", std::ios::binary | std::ios::ate);
   if (!file) {
     std::cerr << "Error opening file" << std::endl;
