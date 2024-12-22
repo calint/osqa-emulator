@@ -54,11 +54,9 @@ rv_uint32 riscv_init(RISCV *cpu, rvbuscallback bus, rv_uint32 resetvec) {
   return 0;
 }
 rv_uint32 riscv_cycle(RISCV *cpu) {
-  rv_uint32 errorcode = 0;
   rv_uint32 instruction = 0;
   cpu->regs[0] = 0x0;
-  errorcode =
-      cpu->bus(cpu->pc, RVBUS_LONG, 0, &instruction); /*Load next instruction*/
+  rv_uint32 errorcode = cpu->bus(cpu->pc, RVBUS_LONG, 0, &instruction);
   if (errorcode != 0) {
     cpu->pc += 4;
     return errorcode;
