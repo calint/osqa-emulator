@@ -45,16 +45,16 @@ rv_uint32 ram_access(const rv_uint32 addr, const RISCV_BUSWIDTH width,
       *data = 0;
     } else if (addr == UART_IN) {
       const int ch = getchar();
-      if (ch != EOF) {
-        if (ch == 0x0a) {
+      if (ch == EOF) {
+        *data = 0;
+      } else {
+        if (ch == '\n') {
           // convert newline from terminal to carriage return as expected from
           // serial
-          *data = 0x0d;
+          *data = '\r';
         } else {
           *data = ch;
         }
-      } else {
-        *data = 0;
       }
     } else if (addr == LED) {
       // do nothing when reading from address LED
