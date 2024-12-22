@@ -5,4 +5,3 @@ g++ -std=c++23 -o osqa -Wfatal-errors -Werror -Wall -Wextra -Wpedantic -Wno-unus
 echo
 ls -la --color osqa
 echo
-./osqa firmware.bin

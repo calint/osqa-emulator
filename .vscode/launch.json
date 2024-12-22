@@ -5,8 +5,10 @@
             "name": "Build and Debug",
             "type": "lldb",
             "request": "launch",
-            "program": "${workspaceFolder}/emu",
-            "args": [],
+            "program": "${workspaceFolder}/osqa",
+            "args": [
+                "firmware.bin"
+            ],
             "cwd": "${workspaceFolder}",
             "preLaunchTask": "build",
         }
