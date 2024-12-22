@@ -15,23 +15,17 @@
 std::vector<int8_t> ram(2 * 1024 * 1024, -1);
 
 // Function to read from or write to the RAM
-rv_uint32 ram_access(rv_uint32 addr, RISCV_BUSWIDTH width, rv_uint32 is_store,
-                     rv_uint32 *data) {
+rv_uint32 ram_access(const rv_uint32 addr, const RISCV_BUSWIDTH width,
+                     const rv_uint32 is_store, rv_uint32 *const data) {
   if (addr + width > ram.size() && addr != UART_OUT && addr != UART_IN &&
       addr != LED) {
     return 1; // Address out of bounds
   }
 
   if (is_store) {
-    if (addr == UART_OUT) {
-      const char ch = static_cast<char>(*data & 0xFF);
-      if (ch == 0x7f) {
-        // Convert to backspace
-        std::cout << "\b \b";
-      } else {
-        // Write the byte to the console
-        std::cout << ch;
-      }
+    if (addr == UART_OUT && width == RVBUS_BYTE) {
+      // Write the byte to the console
+      std::cout << static_cast<char>(*data & 0xFF);
       std::cout.flush(); // Ensure the output is flushed
     } else if (addr != LED) {
       // Write to RAM
@@ -51,9 +45,11 @@ rv_uint32 ram_access(rv_uint32 addr, RISCV_BUSWIDTH width, rv_uint32 is_store,
       newt.c_lflag &= ~(ICANON | ECHO);
       tcsetattr(STDIN_FILENO, TCSANOW, &newt);
 
-      int ch = getchar();
+      const int ch = getchar();
       if (ch != EOF) {
-        if (ch == 0x0a) {
+        if (ch == 0x08) {
+          *data = 0x7f;
+        } else if (ch == 0x0a) {
           *data = 0x0d;
         } else {
           *data = ch;
@@ -84,7 +80,7 @@ auto main(int argc, char **argv) -> int {
   }
 
   // Get the size of the file
-  std::streamsize size = file.tellg();
+  const std::streamsize size = file.tellg();
   file.seekg(0, std::ios::beg);
 
   // Read the file into the RAM
@@ -107,7 +103,7 @@ auto main(int argc, char **argv) -> int {
 
   // Run the CPU cycle
   while (true) {
-    if (rv_uint32 err = riscv_cycle(&cpu)) {
+    if (const rv_uint32 err = riscv_cycle(&cpu)) {
       std::cout << "Error: " << err << std::endl;
       return err;
     }
