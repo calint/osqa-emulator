@@ -33,15 +33,19 @@
 #define RD ((instruction >> 7) & 0x1F)
 #define FUNCT3 ((instruction >> 12) & 0x7)
 #define FUNCT7 ((instruction >> 25) & 0x7F)
+
 typedef unsigned int rv_uint32;
 typedef signed int rv_int32;
+
 typedef enum buswidth {
   RVBUS_BYTE = 1,
   RVBUS_SHORT = 2,
   RVBUS_LONG = 4
 } RISCV_BUSWIDTH;
+
 typedef rv_uint32 (*rvbuscallback)(rv_uint32 addr, RISCV_BUSWIDTH width,
                                    rv_uint32 is_store, rv_uint32 *data);
+
 typedef struct rvcpu {
   rv_uint32 regs[32];
   rv_uint32 pc;
@@ -53,6 +57,7 @@ rv_uint32 riscv_init(RISCV *cpu, rvbuscallback bus, rv_uint32 resetvec) {
   cpu->bus = bus;
   return 0;
 }
+
 rv_uint32 riscv_cycle(RISCV *cpu) {
   rv_uint32 instruction = 0;
   cpu->regs[0] = 0x0;
@@ -260,13 +265,11 @@ rv_uint32 riscv_cycle(RISCV *cpu) {
     default:
       return 0x13;
     }
-
     break;
   }
 
   case 0x33: /*Register Arithmetic*/
   {
-
     switch (FUNCT3) {
     case 0x0: /*ADD/SUB*/
     {
@@ -381,7 +384,6 @@ rv_uint32 riscv_cycle(RISCV *cpu) {
     default:
       return 0x16;
     }
-
     break;
   }
 
