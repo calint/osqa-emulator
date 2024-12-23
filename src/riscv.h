@@ -62,7 +62,7 @@ rv_uint32 riscv_cycle(RISCV *cpu) {
     return errorcode;
   }
 #ifdef RISCV_DEBUG
-  printf("pc 0x%x instr 0x%x ", cpu->pc, instruction);
+  printf("pc 0x%08x instr 0x%08x ", cpu->pc, instruction);
 #endif
   switch (OPCODE) {
   case 0x3: /*Load*/
@@ -119,6 +119,8 @@ rv_uint32 riscv_cycle(RISCV *cpu) {
       cpu->regs[RD] = loaded;
       break;
     }
+    default:
+      return 0x10;
     }
 
     break;
@@ -153,6 +155,8 @@ rv_uint32 riscv_cycle(RISCV *cpu) {
       cpu->bus(saddr, RVBUS_LONG, 1, &cpu->regs[RS2]);
       break;
     }
+    default:
+      return 0x11;
     }
 
     break;
@@ -248,9 +252,13 @@ rv_uint32 riscv_cycle(RISCV *cpu) {
 #endif
         break;
       }
+      default:
+        return 0x12;
       }
       break;
     }
+    default:
+      return 0x13;
     }
 
     break;
@@ -279,6 +287,8 @@ rv_uint32 riscv_cycle(RISCV *cpu) {
         cpu->regs[RD] = cpu->regs[RS1] - cpu->regs[RS2];
         break;
       }
+      default:
+        return 0x14;
       }
       break;
     }
@@ -347,6 +357,8 @@ rv_uint32 riscv_cycle(RISCV *cpu) {
 #endif
         break;
       }
+      default:
+        return 0x15;
       }
       break;
     }
@@ -366,6 +378,8 @@ rv_uint32 riscv_cycle(RISCV *cpu) {
       cpu->regs[RD] = cpu->regs[RS1] & cpu->regs[RS2];
       break;
     }
+    default:
+      return 0x16;
     }
 
     break;
@@ -472,12 +486,13 @@ rv_uint32 riscv_cycle(RISCV *cpu) {
       }
       break;
     }
+    default:
+      return 0x17;
     }
     break;
   }
   default:
-
-    break;
+    return 0x18;
   }
 
   cpu->pc += 4;
