@@ -26,6 +26,7 @@ rv_uint32 ram_access(const rv_uint32 addr, const RISCV_BUSWIDTH width,
     if (addr == UART_OUT) {
       const char ch = static_cast<char>(*data & 0xFF);
       if (ch == 0x7f) {
+        // convert from serial to terminal
         std::cout << "\b \b";
       } else {
         std::cout << ch;
@@ -49,8 +50,7 @@ rv_uint32 ram_access(const rv_uint32 addr, const RISCV_BUSWIDTH width,
         *data = 0;
       } else {
         if (ch == '\n') {
-          // convert newline from terminal to carriage return as expected from
-          // serial
+          // convert from terminal to serial key code
           *data = '\r';
         } else {
           *data = ch;
