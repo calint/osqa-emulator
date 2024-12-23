@@ -127,7 +127,6 @@ rv_uint32 riscv_cycle(RISCV *cpu) {
     default:
       return 0x10;
     }
-
     break;
   }
   case 0x23: /*Store*/
@@ -163,12 +162,10 @@ rv_uint32 riscv_cycle(RISCV *cpu) {
     default:
       return 0x11;
     }
-
     break;
   }
   case 0x13: /*Immediate Arithmetic*/
   {
-
     switch (FUNCT3) {
     case 0x0: /*ADDI*/
     {
