@@ -1,7 +1,18 @@
 #!/bin/bash
+#
+# tools used:
+#        g++: 14.2.1 20240910
+#
 set -e
+cd $(dirname "$0")
 
-g++ -std=c++23 -o osqa -fno-rtti -fno-exceptions -Wfatal-errors -Werror -Wall -Wextra -Wpedantic -Wswitch-default -Wno-unused-parameter src/main.cpp
+CMD="g++ -std=c++23 -O3 $@ -fno-rtti -fno-exceptions -Wfatal-errors -Werror -Wall -Wextra -Wpedantic \
+    -Wswitch-default -Wconversion \
+    -Wno-unused-parameter \
+    -o osqa src/main.cpp"
+#echo
+#echo $CMD
+$CMD
 echo
 ls -la --color osqa
 echo
