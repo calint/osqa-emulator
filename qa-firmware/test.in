@@ -1,0 +1,33 @@
+i
+t lighter
+go none
+g lighter me
+i
+t notebook
+d mirror
+w
+e
+e
+w
+wait
+no pen
+wait
+d pen
+t pen
+nl north south balcony
+n
+wait
+s
+ne su
+wait
+wait
+wait
+sdw 1 sector 1
+sdr 1
+sdw 1 sector 1 again
+sdw 2 sector 2
+sdr 1
+sdr 2
+sdw 2 sector 2 again
+sdr 1
+sdr 2

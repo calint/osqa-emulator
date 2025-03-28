@@ -1,4 +1,4 @@
 #!/bin/bash
 set -e
 
-./osqa firmware.bin
+./osqa firmware.img sdcard.img

@@ -1,2 +1,3 @@
-/osqa
-.vscode/settings.json
+osqa
+qa-emulator/osqa-test
+qa-emulator/ram.bin
