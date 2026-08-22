@@ -9,7 +9,9 @@
 #pragma once
 
 #include <cstdint>
+#ifdef RV32I_DEBUG
 #include <cstdio>
+#endif
 
 namespace rv32i {
 
@@ -474,6 +476,13 @@ public:
       break;
     }
     //-----------------------------------------------------------------------
+    case OPCODE_FENCE_PAUSE: { //                                 FENCE/PAUSE
+#ifdef RV32I_DEBUG
+      printf("fence / pause\n");
+#endif
+      // NOP
+      break;
+    }
     default:
       return 9;
     }
@@ -644,6 +653,8 @@ private:
   static uint32_t constexpr FUNCT3_BGE = 0b101;
   static uint32_t constexpr FUNCT3_BLTU = 0b110;
   static uint32_t constexpr FUNCT3_BGEU = 0b111;
+
+  static uint32_t constexpr OPCODE_FENCE_PAUSE = 0b00011'11;
 };
 
 } // namespace rv32i
